@@ -33,7 +33,7 @@ function Footer() {
 
                 {/* Copyright notice */}
                 <p className="text-sm text-gray-400 mt-8">
-                    © 2023 MealPlanner. All rights reserved.
+                    © 2025 MealPlanner. All rights reserved.
                 </p>
             </div>
         </footer>
