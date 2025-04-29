@@ -67,11 +67,10 @@ export default function UserForm({ onSubmitSuccess }) {
   };
 
   return (
-    // Removed 'relative' as absolute positioning is no longer used for the cards themselves
-    // Kept flex justify-center items-center to center the currently visible card
+    
     <div className="flex justify-center items-center bg-gray-100 dark:bg-gray-900 p-4 ">
       {cardVisible ? (
-        // Result Card: Removed absolute positioning and related classes
+        
         <Card className="w-full max-w-md rounded-lg shadow-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
           <CardHeader className="text-center">
             <CardTitle className="text-xl font-bold text-gray-800 dark:text-white">BMI Result</CardTitle>

@@ -75,7 +75,7 @@ function App() {
       <Route path="/details" element={<UserForm />} />
       <Route path="/tasks" element={<Tasks week={week} />} />
     </Routes>
-      {/* <Tasks week={week} /> */}
+      
 
     </>
   )
