@@ -83,7 +83,7 @@ function Tasks(props) {
       
 
       <Link to="/" className="font-semibold text-white absolute top-4 text-3xl left-4 md:top-6 md:left-6 z-10">
-        <h2 className="hover:text-blue-300 transition duration-300">
+        <h2 className="hover:text-blue-100 transition duration-300">
             MealPlanner
         </h2>
       </Link>
