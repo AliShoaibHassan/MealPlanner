@@ -38,16 +38,7 @@ function Navbar() {
             </a>
           </li>
 
-          {/* Call to Action Button */}
-          <li>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-white border-white hover:bg-blue-500 transition duration-300"
-            >
-              Sign Up
-            </Button>
-          </li>
+          
         </div>
       </ul>
     </nav>

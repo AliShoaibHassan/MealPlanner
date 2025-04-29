@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Home from './pages/Home'
 import Tasks from './pages/Tasks.jsx'
+import { Route, Routes } from 'react-router-dom'
+import UserForm from './components/UserForm';
 
 
 function App() {
@@ -68,7 +70,11 @@ function App() {
 
   return (
     <>
-      <Home />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/details" element={<UserForm />} />
+      <Route path="/tasks" element={<Tasks week={week} />} />
+    </Routes>
       {/* <Tasks week={week} /> */}
 
     </>

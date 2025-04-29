@@ -3,6 +3,8 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Link } from 'react-router-dom';
+import UserForm from "../components/UserForm";  
 
 function Tasks(props) {
   const [cardVisible, setCardVisible] = useState(false);
@@ -39,6 +41,7 @@ function Tasks(props) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-400 via-teal-500 to-blue-600 flex items-center justify-center p-6 relative">
+    
       {cardVisible && (
         <div className="absolute top-4 bg-white p-4 rounded shadow-md z-10">
             <select
@@ -76,6 +79,14 @@ function Tasks(props) {
         </div>
 
       )}
+
+      
+
+      <Link to="/" className="font-semibold text-white absolute top-4 text-3xl left-4 md:top-6 md:left-6 z-10">
+        <h2 className="hover:text-blue-300 transition duration-300">
+            MealPlanner
+        </h2>
+      </Link>
 
       <Button
         className="absolute top-4 right-4 bg-blue-700 text-white hover:bg-blue-900 transition duration-300 ease-in-out z-20"
