@@ -2,40 +2,99 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import UserForm from "../components/UserForm";  
+import { getMealPlans, updateMeal } from "../services/mealService";
+import { Loader2 } from "lucide-react";
 
-function Tasks(props) {
+function Tasks() {
   const [cardVisible, setCardVisible] = useState(false);
-  const [weekData, setWeekData] = useState(props.week);
+  const [weekData, setWeekData] = useState([]);
   const [newMeal, setNewMeal] = useState("");
   const [selectedDay, setSelectedDay] = useState("Monday");
   const [mealType, setMealType] = useState("breakfast");
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
+  // Fetch meal plans on component mount
+  useEffect(() => {
+    fetchMealPlans();
+  }, []);
 
+  const fetchMealPlans = async () => {
+    try {
+      setLoading(true);
+      const mealPlans = await getMealPlans();
+      
+      // Transform the data to match our frontend format
+      const formattedData = mealPlans.map(plan => ({
+        name: plan.day,
+        meals: {
+          breakfast: plan.meals.breakfast,
+          lunch: plan.meals.lunch,
+          dinner: plan.meals.dinner
+        }
+      }));
+      
+      // Define the correct order of days
+      const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      
+      // Sort the formatted data according to the day order
+      const sortedData = formattedData.sort((a, b) => {
+        return dayOrder.indexOf(a.name) - dayOrder.indexOf(b.name);
+      });
+      
+      setWeekData(sortedData);
+    } catch (error) {
+      console.error("Error fetching meal plans:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   function handleClick() {
     setCardVisible(!cardVisible);
   }
 
-  function updateMeal() {
-    const updatedWeek = weekData.map((day) => {
-      if (day.name === selectedDay) {
-        return {
-          ...day,
-          meals: {
-            ...day.meals,
-            [mealType]: newMeal,
-          },
-        };
-      }
-      return day;
-    });
-  
-    setWeekData(updatedWeek);
-    setNewMeal("");
-    setCardVisible(false);
+  async function updateMealPlan() {
+    try {
+      setUpdating(true);
+      
+      // Update on the backend
+      await updateMeal(selectedDay, mealType, newMeal);
+      
+      // Update the local state
+      const updatedWeek = weekData.map((day) => {
+        if (day.name === selectedDay) {
+          return {
+            ...day,
+            meals: {
+              ...day.meals,
+              [mealType]: newMeal,
+            },
+          };
+        }
+        return day;
+      });
+    
+      setWeekData(updatedWeek);
+      setNewMeal("");
+      setCardVisible(false);
+    } catch (error) {
+      console.error("Error updating meal:", error);
+      // Show error notification if needed
+    } finally {
+      setUpdating(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-400 via-teal-500 to-blue-600 flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-white" />
+        <span className="ml-2 text-white text-xl">Loading meal plans...</span>
+      </div>
+    );
   }
   
 
@@ -72,15 +131,16 @@ function Tasks(props) {
                 className="mb-2 w-full max-w-xs text-black border border-black"
             />
 
-
-            <Button onClick={updateMeal} className="bg-green-500 hover:bg-green-700 text-white w-full">
-                Save Meal
+            <Button onClick={updateMealPlan} disabled={updating} className="bg-green-500 hover:bg-green-700 text-white w-full">
+                {updating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : 'Save Meal'}
             </Button>
         </div>
-
       )}
-
-      
 
       <Link to="/" className="font-semibold text-white absolute top-4 text-3xl left-4 md:top-6 md:left-6 z-10">
         <h2 className="hover:text-blue-100 transition duration-300">
