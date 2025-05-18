@@ -6,7 +6,7 @@ const mealRoutes = require('./routes/mealRoutes');
 const dotenv = require("dotenv");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5100;
 require('dotenv').config();
 
 // Middleware
