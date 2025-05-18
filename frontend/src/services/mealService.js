@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Use an environment variable to define the API base URL
 // This variable will be set in the docker-compose.yml
-const API_BASE_URL = http://54.208.135.27:5100/api/meals; // For Vite projects
+const API_BASE_URL = 'http://54.208.135.27:5100/api/meals'; // For Vite projects
 
 
 // Create axios instance
