@@ -23,12 +23,5 @@ services:
       # This tells the backend where to find the mongo service using the service name 'mongo'
       # and its internal port 27017.
       - MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
-    depends_on:
-      - mongo
 
-  mongo:
-    image: mongo
-    container_name: jenkins_mongo
-    ports:
-      - "27018:27017"
 
