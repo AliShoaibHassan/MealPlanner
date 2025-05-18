@@ -46,6 +46,7 @@ export const updateMeal = async (day, mealType, mealContent, userId = 'default')
       userId
     });
     return response.data;
+    //Testing
   } catch (error) {
     console.error('Error updating meal:', error);
     throw error;
