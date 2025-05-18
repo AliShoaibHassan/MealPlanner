@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/meals';
+const API_URL = 'http://54.208.135.27/:5100/api/meals';
 
 // Create axios instance
 const apiClient = axios.create({

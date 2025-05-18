@@ -1,0 +1,30 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    container_name: jenkins_frontend
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build: ./backend
+    container_name: jenkins_backend
+    ports:
+      - "5100:5100"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: jenkins_mongo
+    ports:
+      - "27018:27017"
+
