@@ -17,7 +17,7 @@ const apiClient = axios.create({
 export const getMealPlans = async (userId = 'default') => {
   try {
     // The base URL already includes /api/meals, so append query params directly
-    const response = await apiClient.get(`http://backend:5100/api/meals?userId=${userId}`);
+    const response = await apiClient.get(`http://54.208.135.27:5100/api/meals?userId=${userId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching meal plans:', error);
