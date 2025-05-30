@@ -21,7 +21,7 @@ mongoose.connect(MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('MongoDB connected'))
+.then(() => console.log('MongoDB connected!'))
 .catch(err => console.error('MongoDB connection error:', err));
 
 // Use routes
