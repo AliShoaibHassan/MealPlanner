@@ -6,7 +6,7 @@ const mealRoutes = require('./routes/mealRoutes');
 const dotenv = require("dotenv");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5100;
 require('dotenv').config();
 
 // Middleware
@@ -17,11 +17,11 @@ console.log('Mongo URI:', process.env.MONGO_URI);
 
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('MongoDB connected'))
+.then(() => console.log('MongoDB connected!'))
 .catch(err => console.error('MongoDB connection error:', err));
 
 // Use routes

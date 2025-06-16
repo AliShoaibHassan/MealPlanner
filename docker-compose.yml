@@ -1,0 +1,27 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    container_name: jenkins_frontend
+    ports:
+      - "3100:3100"
+    
+    environment:
+      - VITE_BACKEND_API_URL=http://backend:5100/api/meals
+      - NODE_ENV=development
+
+  backend:
+    build: ./backend
+    container_name: jenkins_backend
+    ports:
+      - "5100:5100"
+    
+    environment:
+      - NODE_ENV=development
+      - PORT=5100 # Explicitly set port 5100
+      # --- ADD THIS ENVIRONMENT VARIABLE ---
+      # This tells the backend where to find the mongo service using the service name 'mongo'
+      # and its internal port 27017.
+      - MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+
+
