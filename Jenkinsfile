@@ -13,53 +13,54 @@ pipeline {
             }
         }
         
-        stage('Setup Environment') {
+        stage('Setup Docker') {
             steps {
-                // Setup Node.js
-                sh 'nvm install ${NODE_VERSION}'
-                sh 'nvm use ${NODE_VERSION}'
-                
-                // Setup Python
-                sh 'python3 -m venv venv'
-                sh '. venv/bin/activate'
-                sh 'pip install -r requirements.txt'
-                
-                // Install Chrome (headless mode)
+                // Ensure Docker and Docker Compose are installed
                 sh '''
-                wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-                echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-                apt-get update
-                apt-get install -y google-chrome-stable
+                    if ! command -v docker &> /dev/null; then
+                        echo "Docker not found, installing..."
+                        curl -fsSL https://get.docker.com -o get-docker.sh
+                        sh get-docker.sh
+                    else
+                        echo "Docker already installed"
+                    fi
+                    
+                    if ! command -v docker-compose &> /dev/null; then
+                        echo "Docker Compose not found, installing..."
+                        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                        chmod +x /usr/local/bin/docker-compose
+                    else
+                        echo "Docker Compose already installed"
+                    fi
                 '''
             }
         }
         
-        stage('Start Backend') {
+        stage('Build Docker Images') {
             steps {
-                dir('backend') {
-                    sh 'npm install'
-                    sh 'nohup npm start &'
-                    sh 'sleep 10' // Wait for backend to start
-                }
+                // Build the Docker images
+                sh 'docker-compose build'
             }
         }
         
-        stage('Start Frontend') {
+        stage('Run Application') {
             steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'nohup npm run dev &'
-                    sh 'sleep 10' // Wait for frontend to start
-                }
+                // Start the backend and frontend services
+                sh 'docker-compose up -d frontend backend'
+                
+                // Wait for services to be ready
+                sh 'sleep 20'
             }
         }
         
         stage('Run Selenium Tests') {
             steps {
-                sh '. venv/bin/activate && python tests/run_tests.py'
+                // Run the test container
+                sh 'docker-compose up --abort-on-container-exit test'
             }
             post {
                 always {
+                    // Archive test reports and screenshots
                     archiveArtifacts artifacts: 'reports/*.html,screenshots/*.png', allowEmptyArchive: true
                 }
             }
@@ -68,9 +69,8 @@ pipeline {
     
     post {
         always {
-            // Clean up processes
-            sh 'pkill -f "npm start" || true'
-            sh 'pkill -f "npm run dev" || true'
+            // Clean up Docker containers
+            sh 'docker-compose down --volumes --remove-orphans'
         }
         success {
             echo 'All tests passed!'

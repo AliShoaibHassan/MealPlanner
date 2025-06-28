@@ -6,8 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 # Application constants
-BASE_URL = "http://localhost:5173"
-API_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:3100"
+API_URL = "http://localhost:5100"
 
 def navigate_to_home(driver):
     """Navigate to the homepage and verify it loaded."""

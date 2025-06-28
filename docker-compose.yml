@@ -24,4 +24,16 @@ services:
       # and its internal port 27017.
       - MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: jenkins_test
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./reports:/app/reports
+      - ./screenshots:/app/screenshots
+
 
