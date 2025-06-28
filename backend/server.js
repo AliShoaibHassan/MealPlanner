@@ -7,17 +7,22 @@ const dotenv = require("dotenv");
 
 const app = express();
 const PORT = process.env.PORT || 5100;
-require('dotenv').config();
+dotenv.config();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 
 console.log('Mongo URI:', process.env.MONGO_URI);
 
-
 // Connect to MongoDB
-mongoose.connect(MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -27,7 +32,12 @@ mongoose.connect(MONGO_URI='mongodb+srv://alishoaib:1234@cluster0.cmgkc.mongodb.
 // Use routes
 app.use('/api/meals', mealRoutes);
 
+// Root path for API health check
+app.get('/', (req, res) => {
+  res.json({ status: 'API is running' });
+});
+
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });

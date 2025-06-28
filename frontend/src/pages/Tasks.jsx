@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import { getMealPlans, updateMeal } from "../services/mealService";
+import { getMealPlans, updateMeal, initializeMealPlans } from "../services/mealService";
 import { Loader2 } from "lucide-react";
 
 function Tasks() {
@@ -14,7 +14,68 @@ function Tasks() {
   const [selectedDay, setSelectedDay] = useState("Monday");
   const [mealType, setMealType] = useState("breakfast");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(false);
+
+  // Initialize default week data if API fails
+  const defaultWeek = [
+    {
+      name: "Monday",
+      meals: {
+        breakfast: "Oatmeal with fruits",
+        lunch: "Grilled chicken salad",
+        dinner: "Spaghetti Bolognese"
+      }
+    },
+    {
+      name: "Tuesday",
+      meals: {
+        breakfast: "Pancakes with syrup",
+        lunch: "Turkey sandwich",
+        dinner: "Stir-fried vegetables with rice"
+      }
+    },
+    {
+      name: "Wednesday",
+      meals: {
+        breakfast: "Smoothie bowl",
+        lunch: "Chicken wrap",
+        dinner: "Beef tacos"
+      }
+    },
+    {
+      name: "Thursday",
+      meals: {
+        breakfast: "Scrambled eggs and toast",
+        lunch: "Tomato soup with breadsticks",
+        dinner: "Grilled salmon with quinoa"
+      }
+    },
+    {
+      name: "Friday",
+      meals: {
+        breakfast: "French toast",
+        lunch: "Veggie burger",
+        dinner: "Pizza night"
+      }
+    },
+    {
+      name: "Saturday",
+      meals: {
+        breakfast: "Bagel with cream cheese",
+        lunch: "Chicken Caesar salad",
+        dinner: "BBQ ribs"
+      }
+    },
+    {
+      name: "Sunday",
+      meals: {
+        breakfast: "Avocado toast",
+        lunch: "Pasta Alfredo",
+        dinner: "Roast chicken with veggies"
+      }
+    }
+  ];
 
   // Fetch meal plans on component mount
   useEffect(() => {
@@ -24,32 +85,59 @@ function Tasks() {
   const fetchMealPlans = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
+      console.log("Fetching meal plans...");
       const mealPlans = await getMealPlans();
+      console.log("Received meal plans:", mealPlans);
       
-      // Transform the data to match our frontend format
-      const formattedData = mealPlans.map(plan => ({
-        name: plan.day,
-        meals: {
-          breakfast: plan.meals.breakfast,
-          lunch: plan.meals.lunch,
-          dinner: plan.meals.dinner
+      // If we received empty data, try to initialize the meal plans
+      if (!mealPlans || mealPlans.length === 0) {
+        console.log("No meal plans found, initializing...");
+        const initializedPlans = await initializeMealPlans();
+        
+        if (initializedPlans && initializedPlans.length > 0) {
+          formatAndSetMealData(initializedPlans);
+          return;
         }
-      }));
+      } else {
+        formatAndSetMealData(mealPlans);
+        return;
+      }
       
-      // Define the correct order of days
-      const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      // If all API calls fail, use the default data
+      console.log("Using default meal plans");
+      setWeekData(defaultWeek);
       
-      // Sort the formatted data according to the day order
-      const sortedData = formattedData.sort((a, b) => {
-        return dayOrder.indexOf(a.name) - dayOrder.indexOf(b.name);
-      });
-      
-      setWeekData(sortedData);
     } catch (error) {
       console.error("Error fetching meal plans:", error);
+      setError("Failed to load meal plans. Using default data.");
+      setWeekData(defaultWeek);
     } finally {
       setLoading(false);
     }
+  };
+  
+  const formatAndSetMealData = (mealPlans) => {
+    // Transform the data to match our frontend format
+    const formattedData = mealPlans.map(plan => ({
+      name: plan.day,
+      meals: {
+        breakfast: plan.meals.breakfast || "No meal planned",
+        lunch: plan.meals.lunch || "No meal planned",
+        dinner: plan.meals.dinner || "No meal planned"
+      }
+    }));
+    
+    // Define the correct order of days
+    const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    
+    // Sort the formatted data according to the day order
+    const sortedData = formattedData.sort((a, b) => {
+      return dayOrder.indexOf(a.name) - dayOrder.indexOf(b.name);
+    });
+    
+    setWeekData(sortedData);
   };
 
   function handleClick() {
@@ -57,6 +145,11 @@ function Tasks() {
   }
 
   async function updateMealPlan() {
+    if (!newMeal.trim()) {
+      alert("Please enter a meal name");
+      return;
+    }
+    
     try {
       setUpdating(true);
       
@@ -82,7 +175,7 @@ function Tasks() {
       setCardVisible(false);
     } catch (error) {
       console.error("Error updating meal:", error);
-      // Show error notification if needed
+      alert("Failed to update meal. Please try again.");
     } finally {
       setUpdating(false);
     }
@@ -155,6 +248,12 @@ function Tasks() {
         Add Meal
       </Button>
 
+      {error && (
+        <div className="absolute top-16 left-0 right-0 mx-auto w-fit bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-30">
+          <p>{error}</p>
+        </div>
+      )}
+
       <Card className="w-full max-w-4xl shadow-xl bg-rose-100 text-black">
         <CardContent className="p-6">
           <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Weekly Meal Planner</h1>
@@ -183,5 +282,5 @@ function Tasks() {
     </div>
   );
 }
-//Testing2
+
 export default Tasks;
